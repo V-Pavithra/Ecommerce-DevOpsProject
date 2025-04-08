@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Cloning the repo...'
-                git 'https://github.com/V-Pavithra/Ecommerce-DevOpsProject.git'
+                git url: 'https://github.com/V-Pavithra/Ecommerce-DevOpsProject.git', branch: 'main'
             }
         }
 

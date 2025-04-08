@@ -21,14 +21,14 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker compose build'
+                sh 'docker-compose build'
             }
         }
 
         stage('Deploy with Docker Compose') {
             steps {
-                sh 'docker compose down || true'  // Clean existing containers
-                sh 'docker compose up -d'         // Deploy fresh containers
+                sh 'docker-compose down || true'  // Clean existing containers
+                sh 'docker-compose up -d'         // Deploy fresh containers
             }
         }
     }

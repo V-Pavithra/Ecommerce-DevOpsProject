@@ -1,15 +1,19 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
-    }
-
     stages {
         stage('Checkout') {
             steps {
                 echo 'Cloning the repo...'
                 git url: 'https://github.com/V-Pavithra/Ecommerce-DevOpsProject.git', branch: 'main'
+            }
+        }
+
+        stage('Debug Info') {
+            steps {
+                sh 'pwd'
+                sh 'ls -la'
+                sh 'which docker-compose || echo "docker-compose not in PATH"'
             }
         }
 
@@ -21,14 +25,21 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker-compose build'
+                // Try with full path to docker-compose
+                sh '''
+                export PATH=$PATH:/usr/bin:/usr/local/bin
+                /usr/bin/docker-compose build || docker-compose build
+                '''
             }
         }
 
         stage('Deploy with Docker Compose') {
             steps {
-                sh 'docker-compose down || true'  // Clean existing containers
-                sh 'docker-compose up -d'         // Deploy fresh containers
+                sh '''
+                export PATH=$PATH:/usr/bin:/usr/local/bin
+                /usr/bin/docker-compose down || true
+                /usr/bin/docker-compose up -d
+                '''
             }
         }
     }

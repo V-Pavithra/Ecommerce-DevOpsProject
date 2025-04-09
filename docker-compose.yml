@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   mysql:
@@ -15,7 +15,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "ecom_user", "-pecom_pass"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -30,7 +30,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ecom_user
       SPRING_DATASOURCE_PASSWORD: ecom_pass
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    restart: on-failure
 
   product-service:
     build:
@@ -42,7 +44,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ecom_user
       SPRING_DATASOURCE_PASSWORD: ecom_pass
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    restart: on-failure
 
   order-service:
     build:
@@ -54,7 +58,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ecom_user
       SPRING_DATASOURCE_PASSWORD: ecom_pass
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    restart: on-failure
 
   payment-service:
     build:
@@ -66,8 +72,11 @@ services:
       SPRING_DATASOURCE_USERNAME: ecom_user
       SPRING_DATASOURCE_PASSWORD: ecom_pass
     depends_on:
-      - mysql
-      - order-service
+      mysql:
+        condition: service_healthy
+      order-service:
+        condition: service_started
+    restart: on-failure
 
 volumes:
   mysql_data:
